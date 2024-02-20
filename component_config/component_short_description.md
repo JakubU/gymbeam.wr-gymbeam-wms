@@ -1,0 +1,1 @@
+Service dedicated to seamless data integration into Gymbeam's new e-shop WMS (Warehouse Management System), ensuring efficient and accurate information recording
