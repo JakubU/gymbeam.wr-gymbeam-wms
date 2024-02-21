@@ -1,19 +1,32 @@
 {
   "type": "object",
   "title": "extractor configuration",
-  "required": [
-    "print_hello"
-  ],
   "properties": {
-    "print_hello": {
-      "type": "boolean",
-      "title": "Print Hello",
-      "propertyOrder": 1
-    },
-    "debug": {
-      "type": "boolean",
-      "title": "Debug",
-      "propertyOrder": 2
-    }
+    "#api_token": {
+      "type": "string",
+      "title": "WMS API Token",
+      "format": "password",
+      "propertyOrder": 1,
+      "links": [
+        {
+          "rel": "Documentation",
+          "href": "http://gb-api-documentation.s3-website.eu-central-1.amazonaws.com/gb-warehouse-backend/index.html"
+        }
+    ]
+
+  },
+  "#api_url": {
+    "type": "string",
+    "title": "WMS API URL",
+    "description": "The URL, where the WMS API is located. The URL should not contain the rest part of the URL.",
+    "propertyOrder": 2,
+    "links": [
+      {
+        "rel": "Documentation",
+        "href": "http://gb-api-documentation.s3-website.eu-central-1.amazonaws.com/gb-warehouse-backend/index.html"
+      }
+  ]
+
+}
   }
 }
