@@ -6,16 +6,10 @@
       "type": "string",
       "title": "WMS API Token",
       "format": "password",
-      "propertyOrder": 1,
-      "links": [
-        {
-          "rel": "Documentation",
-          "href": "http://gb-api-documentation.s3-website.eu-central-1.amazonaws.com/gb-warehouse-backend/index.html"
-        }
-    ]
+      "propertyOrder": 1
 
   },
-  "#api_url": {
+  "api_url": {
     "type": "string",
     "title": "WMS API URL",
     "description": "The URL, where the WMS API is located. The URL should not contain the rest part of the URL.",
