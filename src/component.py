@@ -109,6 +109,16 @@ class Component(ComponentBase):
 
                 except requests.RequestException as e:
                     failed_requests += 1
+                    logging.error(f"Failed request to {url}. Error: {e}")
+                    logging.error(f"Request payload: {json.dumps(modified_payload)}")
+                    
+                    # Write output record for failed request
+                    self.write_output_record(
+                        endpoint=endpoint,
+                        data=json.dumps(modified_payload),
+                        status_code=None,  # Set status_code to None for failed requests
+                        message=str(e)     # Log the error message as the message for the failed request
+                    )
 
         # Log the end of data writing
         logging.info(f"Data writing completed. Successful requests: {successful_requests}, Failed requests: {failed_requests}")
