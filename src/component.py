@@ -19,6 +19,29 @@ class Component(ComponentBase):
     def __init__(self):
         super().__init__()
 
+    def create_output_table(self):
+        """
+        Creates the output table definition.
+        """
+        # Create the output table definition
+        self.output_table = self.create_out_table_definition('result.csv', incremental=True)
+        # Open output file, set headers, writer, and write headers
+        self._output_file = open(self.output_table.full_path, 'wt', encoding='UTF-8', newline='')
+        output_fields = ['endpoint', 'data', 'status_code', 'message']
+        self._output_writer = csv.DictWriter(self._output_file, fieldnames=output_fields)
+        self._output_writer.writeheader()
+
+    def write_output_record(self, endpoint, data, status_code, message):
+        """
+        Writes a record to the output table.
+        """
+        self._output_writer.writerow({
+            'endpoint': endpoint,
+            'data': data,
+            'status_code': status_code,
+            'message': message
+        })
+
     def run(self):
         input_tables = self.get_input_tables_definitions()
         for table in input_tables:
@@ -37,6 +60,9 @@ class Component(ComponentBase):
 
         # Log the start of data writing
         logging.info("Data writing started...")
+
+        # Create output table
+        self.create_output_table()
 
         # Iterate over input data
         input_table = input_tables[0]
@@ -72,13 +98,24 @@ class Component(ComponentBase):
                     response = requests.post(url, json=modified_payload, headers=headers)
                     response.raise_for_status()
                     successful_requests += 1
+
+                    # Write output record after each request
+                    self.write_output_record(
+                        endpoint=endpoint,
+                        data=json.dumps(modified_payload),
+                        status_code=response.status_code,
+                        message=response.text
+                    )
+
                 except requests.RequestException as e:
                     failed_requests += 1
 
         # Log the end of data writing
         logging.info(f"Data writing completed. Successful requests: {successful_requests}, Failed requests: {failed_requests}")
 
-        # Continue with the rest of your code...
+        # Close the output file
+        self._output_file.close()
+
 
 if __name__ == "__main__":
     try:
