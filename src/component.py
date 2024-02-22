@@ -3,9 +3,12 @@ import logging
 import json
 import requests
 from datetime import datetime
-
 from keboola.component.base import ComponentBase
 from keboola.component.exceptions import UserException
+
+# Disable requests INFO level logging
+logging.getLogger('urllib3').setLevel(logging.WARNING)
+logging.getLogger('requests').setLevel(logging.WARNING)
 
 # Configuration variables
 KEY_API_TOKEN = '#api_token'
@@ -27,6 +30,13 @@ class Component(ComponentBase):
         # Fetch configuration values
         api_token = self.configuration.parameters.get(KEY_API_TOKEN, '')
         api_url = self.configuration.parameters.get(KEY_API_URL, '')
+
+        # Initialize counters
+        successful_requests = 0
+        failed_requests = 0
+
+        # Log the start of data writing
+        logging.info("Data writing started...")
 
         # Iterate over input data
         input_table = input_tables[0]
@@ -61,9 +71,12 @@ class Component(ComponentBase):
                 try:
                     response = requests.post(url, json=modified_payload, headers=headers)
                     response.raise_for_status()
-                    logging.info(f"POST request to {url} successful. Response: {response.text}")
+                    successful_requests += 1
                 except requests.RequestException as e:
-                    logging.error(f"Error making POST request to {url}: {e}")
+                    failed_requests += 1
+
+        # Log the end of data writing
+        logging.info(f"Data writing completed. Successful requests: {successful_requests}, Failed requests: {failed_requests}")
 
         # Continue with the rest of your code...
 
