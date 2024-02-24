@@ -78,11 +78,6 @@ class Component(ComponentBase):
                     logging.warning(f"Error decoding JSON in 'data' column: {e}")
                     continue
 
-                # Upraviť štruktúru payloadu
-                modified_payload = {
-                    "data": [data.get('data', {})]
-                }
-
                 # Construct the URL using the provided endpoint from the input table
                 endpoint = in_row.get('endpoint', '')
                 url = f"{api_url}/{endpoint}"
@@ -95,14 +90,14 @@ class Component(ComponentBase):
 
                 # Make the POST request
                 try:
-                    response = requests.post(url, json=modified_payload, headers=headers)
+                    response = requests.post(url, json=data, headers=headers)
                     response.raise_for_status()
                     successful_requests += 1
 
                     # Write output record after each request
                     self.write_output_record(
                         endpoint=endpoint,
-                        data=json.dumps(modified_payload),
+                        data=json.dumps(data),  # Write the original data as it is
                         status_code=response.status_code,
                         message=response.text
                     )
@@ -110,12 +105,12 @@ class Component(ComponentBase):
                 except requests.RequestException as e:
                     failed_requests += 1
                     logging.error(f"Failed request to {url}. Error: {e}")
-                    logging.error(f"Request payload: {json.dumps(modified_payload)}")
-                    
+                    logging.error(f"Request payload: {json.dumps(data)}")
+
                     # Write output record for failed request
                     self.write_output_record(
                         endpoint=endpoint,
-                        data=json.dumps(modified_payload),
+                        data=json.dumps(data),
                         status_code=None,  # Set status_code to None for failed requests
                         message=str(e)     # Log the error message as the message for the failed request
                     )
